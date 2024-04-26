@@ -12,7 +12,7 @@ console.log(cookiOption)
 const createAccount =  async (req,res,next)=>{
     
        const{fullName,email,mobileNumber,password} = req.body;
-       console.log(fullName,email,mobileNumber,password)
+     
        if(!fullName||!email||!mobileNumber ||!password){
        return next(new AppError("All filed is required"),500)
        }
@@ -28,7 +28,7 @@ const createAccount =  async (req,res,next)=>{
        if(!user){
         return next(new AppError(" Account could not create try again!!"))
        }
-         console.log(req.file)
+       
       if(req.file){
         try{
                const result = await cloudinary.v2.uploader.upload(req.file.path,{
@@ -64,7 +64,7 @@ const createAccount =  async (req,res,next)=>{
 const LogIn = async(req,res,next)=>{
  try{
   const{email,password} = req.body;
-  console.log(email,password)
+  
   if(!email||!password){
   return next (new AppError(" emial and password is required!!"))
     
@@ -97,9 +97,9 @@ const LogIn = async(req,res,next)=>{
 const getProfile = async(req,res,next)=>{
       try{
         const userId = req.user.id
-        console.log(userId)
+        
         const user = await User.findById(userId)
-        console.log("this is user ",user)
+       
         res.status(200).json({
           success:true,
           message:" user profile get successfully",
@@ -130,6 +130,46 @@ const Logout = async(req,res,next)=>{
 
   }
 }
+
+const updateProfile = async(req, res, next)=>{
+  const{fullName,mobileNumber} = req.body
+  
+  const{id } = req.params;
+ 
+  const user = await User.findById(id)
+ 
+  if(!user){
+    return next(new AppError(' user doesnot exist in database '))
+  }
+  if(fullName && mobileNumber){
+    user.fullName = fullName
+    user.mobileNumber = mobileNumber
+  }
+  await cloudinary.v2.uploader.destroy(user.avatar.secure_url)
+  if(req.file){
+    try{
+        const result = await cloudinary.v2.uploader.upload(req.file.path,{
+          folder:'imagecontainer',
+          width:256,
+          height:256,
+          gravity:'faces',
+          crop:'fill'
+        })
+        if(result){
+          user.avatar.public_id = result.public_id
+          user.avatar.secure_url = result.secure_url;
+        }
+    }catch(e){
+             return next(new AppError(` file not updated successfully ${ e.message}`))
+    }
+  }
+  await user.save()
+  res.status(200).json({
+    success:true,
+    message:' Profile updated successfully',
+    user
+  })
+}
 const deleteAccount = async  (req,res,next)=>{
   try{
     const id = req.user.id
@@ -137,7 +177,7 @@ const deleteAccount = async  (req,res,next)=>{
       return next(new AppError("Please LogIn in your account "))
     }
     const user = await User.findById(id)
-    console.log(user)
+   
     if(!user){
       return next(new AppError(" user dosenot exist in database"))
     }
@@ -156,6 +196,7 @@ export{
     createAccount,
     LogIn,
     getProfile,
+    updateProfile,
     Logout,
     deleteAccount
 }

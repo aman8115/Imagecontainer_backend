@@ -10,11 +10,11 @@ export const isLogin = async(req,res,next)=>{
     }
     try{
         const payload = await JWT.verify(token,process.env.SECRET)
-        console.log("payload",payload)
+       
         if(!payload){
             return next (new AppError(' payload not find '))
         }
-       console.log(  " user" ,req.user)
+       
        req.user = payload;
        
         return next();
