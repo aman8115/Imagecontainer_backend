@@ -22,10 +22,7 @@ const createAccount =  async (req,res,next)=>{
        }
        const user = await User.create({
         fullName, email,mobileNumber,password,
-        avatar:{
-            public_id:'dummy',
-            secure_url:"https://res.cloudinary.com/du9jzqlpt/image/upload/v1674647316/avatar_drzgxv.jpg"
-        }
+     
         
        })
        if(!user){
@@ -61,22 +58,22 @@ const createAccount =  async (req,res,next)=>{
        })
       
        
-        res.status(400).json({
-           success:false,
-           message:` your user  not create`
-        })
+       
        
 }
 const LogIn = async(req,res,next)=>{
  try{
   const{email,password} = req.body;
+  console.log(email,password)
   if(!email||!password){
   return next (new AppError(" emial and password is required!!"))
     
   }
   const user = await User.findOne({email}).select("+password")
-  if(!(user && !(await user.matchPassword(password)))){
-    return next (new AppError ( " Please Enter vaild password "))
+  console.log(user)
+ 
+  if(!user&&!(await user.matchPassword(password))){
+    return next (new AppError(' Please Enter vaild password'))
   }
   const token = await user.genrateToken()
 
@@ -115,8 +112,50 @@ const getProfile = async(req,res,next)=>{
          })
       }
 }
+const Logout = async(req,res,next)=>{
+  try{
+    const cookieOption = {
+      maxAge:0,
+      secure:true,
+      httpOnly:true,
+    }
+    res.cookie("token",null,cookiOption)
+    res.status(200).json({
+      success:true,
+      message:" user logout successfully"
+    })
+
+  }catch(e){
+    return next (new AppError(" user not logout successfully"))
+
+  }
+}
+const deleteAccount = async  (req,res,next)=>{
+  try{
+    const id = req.user.id
+    if(!id){
+      return next(new AppError("Please LogIn in your account "))
+    }
+    const user = await User.findById(id)
+    console.log(user)
+    if(!user){
+      return next(new AppError(" user dosenot exist in database"))
+    }
+    await User.findByIdAndDelete(id)
+    res.status(200).json({
+      success:true,
+      message:' your profile deleted successfully',
+      user
+    })
+
+  }catch(e){
+    return next(new AppError(` you profile couldnot delete ${e.message}`))
+  }
+}
 export{
     createAccount,
     LogIn,
-    getProfile
+    getProfile,
+    Logout,
+    deleteAccount
 }

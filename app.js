@@ -1,6 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
+import morgan from 'morgan'
 import dataBase_Connection from './config/config.js'
 import errormiddleware from './middleware/errormiddleware.js'
 
@@ -12,6 +13,7 @@ app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 app.use(cors())
 app.use(cookieParser())
+app.use(morgan('dev'))
 dataBase_Connection()
 app.use('/user',router)
 app.all('*',(req,res)=>{
