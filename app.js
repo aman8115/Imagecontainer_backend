@@ -6,6 +6,7 @@ import dataBase_Connection from './config/config.js'
 import errormiddleware from './middleware/errormiddleware.js'
 
 import router from './routers/user.router.js'
+import medieaRouter from './routers/media.router.js'
 
 
 const app = express()
@@ -16,6 +17,7 @@ app.use(cookieParser())
 app.use(morgan('dev'))
 dataBase_Connection()
 app.use('/user',router)
+app.use('/mediea',medieaRouter)
 app.all('*',(req,res)=>{
     res.status(400).send("Oops !! somthing went wrong")
 
