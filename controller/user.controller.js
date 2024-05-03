@@ -8,7 +8,7 @@ const cookiOption = {
   httpOnly:true,
   secure:true
 }
-console.log(cookiOption)
+
 const createAccount =  async (req,res,next)=>{
     
        const{fullName,email,mobileNumber,password} = req.body;

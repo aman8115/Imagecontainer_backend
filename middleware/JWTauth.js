@@ -4,7 +4,7 @@ import AppError from './errormiddleware.js'
 config()
 export const isLogin = async(req,res,next)=>{
     const token = (req.cookies && req.cookies.token)||null
-    console.log("token",token)
+    
     if(!token){
         return next ( new AppError(" Please Login "),500)
     }

@@ -11,14 +11,16 @@ const multimedieaSchema = new mongoose.Schema({
         required:[true,'description is required '],
         lowercase:true
     },
-    image:{
+    Post:{
        public_id:{
         type:String
        },
        secure_url:{
         type:String
        }
-    }
+    },
+    
+    
 
 },{timestamps:true})
 const MedieaSchema = mongoose.model("medieaSchema", multimedieaSchema)
