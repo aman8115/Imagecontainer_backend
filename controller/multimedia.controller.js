@@ -2,11 +2,13 @@ import AppError from "../utils/utils.js";
 import  cloudinary from 'cloudinary'
 import MedieaSchema from "../model/multimedia.model.js";
 import videoModel from "../model/video.model.js";
+
 import path from 'path'
 import fs from 'fs/promises'
+import { sendMail } from "../utils/SendMail.js";
  const uploadImage = async(req,res,next)=>{
     const {nameOfimage,description} = req.body;
-    console.log(nameOfimage,description)
+    
     if(!nameOfimage||!description){
         return next(new AppError("All field is required "))
     }
@@ -33,7 +35,7 @@ import fs from 'fs/promises'
                 Mediea.Post.secure_url = result.secure_url
                 fs.rm(`uploads/${req.file.filename}`)
                }
-
+      
         }catch(e){
             return next (new AppError(` file not uploaded try again ${ e.message}`))
         }

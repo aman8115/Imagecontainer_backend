@@ -3,6 +3,7 @@ import AppError from '../utils/utils.js'
 import path from 'path'
 import  cloudinary from 'cloudinary'
 import fs from 'fs/promises'
+import { sendMail } from '../utils/SendMail.js'
 const cookiOption = {
   maxAge:12*60*60*1000,
   httpOnly:true,
@@ -42,8 +43,10 @@ const createAccount =  async (req,res,next)=>{
                if(result){
                 user.avatar.public_id = result.public_id;
                 user.avatar.secure_url = result.secure_url
-                fs.rm(`uploads/${req.file.filename}`)
+                await fs.rm(`uploads${req.file.filename}`)
+                
                }
+
         }catch(e){
           return next (new AppError(' file not uploaded try again!!'),500)
 
@@ -56,6 +59,9 @@ const createAccount =  async (req,res,next)=>{
         message:"User Rgistration successfull ",
         userInfo:user
        })
+       const  subject = 'Registration confirmation'
+       const message = ' user Account created successfully at my comapny'
+       await  sendMail(email,subject,message)
       
        
        
