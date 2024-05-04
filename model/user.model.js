@@ -54,7 +54,7 @@ userSchema.methods = {
         return await bcrypt.compare(PlainText,this.password)
     },
     genrateToken:async function(){
-        return await JWT.sign({id:this._id,fullName:this.fullName, email:this.email,mobileNumber:this.mobileNumber},
+        return await JWT.sign({id:this._id,fullName:this.fullName, email:this.email,mobileNumber:this.mobileNumber,},
            process.env.SECRET,
            {expiresIn:'24h'} )
             

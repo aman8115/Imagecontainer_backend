@@ -84,7 +84,76 @@ import { sendMail } from "../utils/SendMail.js";
     Video
    })
  }
+ const getImage = async(req,res,next)=>{
+          try{
+            const Images = await MedieaSchema.find()
+            if(!Images) {
+                return next(new AppError (' Images not fetched successfully'))
+            }
+            res.status(200).json({
+                success:true,
+                message:' Images Fetched successfully',
+                Images
+            })
+          }catch(e){
+             return next(new AppError(` Images  doesnot exist in database${e.message}`))
+          }
+ }
+ const getVideo = async(req,res,next)=>{
+    try{
+        const videos = await videoModel.find()
+        if(!videos){
+            return next(new AppError(' Videos could not fetched successfully'))
+        }
+        res.status(200).json({
+            success:true,
+            message:' Video fetched successfully',
+            videos
+        })
+    }catch(e){
+        return next(new AppError(` Videos doesnot exist in database ${e.message}`))
+    }
+ }
+ const deleteImage = async(req,res,next)=>{
+    try{
+       const{id} = req.params
+       console.log(id)
+       const Post = await MedieaSchema.findById(id)
+       console.log(Post)
+       await MedieaSchema.findByIdAndDelete(id)
+       res.status(200).json({
+        success:true,
+        message:' image deleted successfully',
+        Post
+       })
+        
+    }catch(e){
+        return next(new AppError(` Image couldnot delete`))
+    }
+ }
+ const deleteVideo = async(req,res,next)=>{
+    try{
+       const{id} = req.params;
+       const Video = await videoModel.findById(id)
+       console.log(Video)
+       if(!Video){
+        return next(new AppError(' Video does not exist in database'))
+       }
+       await videoModel.findByIdAndDelete(id)
+       res.status(200).json({
+        success:true,
+        message:" Video deleted successfully",
+        Video
+       })
+    }catch(e){
+        return next (new AppError(` Video could not deleted ${e.message}`))
+    }
+ }
 export{
     uploadImage,
-    uploadVideo
+    uploadVideo,
+    getImage,
+    getVideo,
+    deleteImage,
+    deleteVideo
 }
